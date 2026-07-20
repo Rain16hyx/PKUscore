@@ -1,0 +1,64 @@
+:root {
+  color-scheme: light;
+  --bg: #f5f7f9; --surface: #fff; --surface-soft: #eef2f5; --text: #17212b;
+  --muted: #667481; --line: #dce3e8; --accent: #8c0000; --accent-soft: #f5e7e7; --on-accent: #fff;
+  --shadow: 0 14px 38px rgba(74, 24, 27, .09); --danger: #b54141;
+}
+[data-theme="dark"] {
+  color-scheme: dark; --bg: #131314; --surface: #1d1d1f; --surface-soft: #29292c; --text: #f2eeee;
+  --muted: #aaa3a3; --line: #403b3c; --accent: #e58b8f; --accent-soft: #3b2527; --on-accent: #171313;
+  --shadow: 0 14px 38px rgba(0,0,0,.25); --danger: #f18d8d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; font-family: Inter, "PingFang SC", "Microsoft YaHei", system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+button, input, select, textarea { font: inherit; }
+button { color: inherit; }
+.topbar { height: 68px; padding: 0 max(24px, calc((100vw - 1160px)/2)); display: flex; align-items: center; justify-content: space-between; background: color-mix(in srgb, var(--surface) 90%, transparent); border-bottom: 1px solid var(--line); position: sticky; top: 0; z-index: 10; backdrop-filter: blur(16px); }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--text); text-decoration: none; font-weight: 720; letter-spacing: -.02em; }
+.brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 9px; background: #8c0000; color: #fff; font-family: Georgia, serif; font-size: 20px; }
+.top-actions, .empty-actions, .dialog-actions { display: flex; align-items: center; gap: 10px; }
+.button, .icon-button { border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 10px 16px; cursor: pointer; font-weight: 650; transition: .18s ease; }
+.button:hover, .icon-button:hover { transform: translateY(-1px); border-color: var(--muted); }
+.button.primary { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+.button.secondary { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+.button.danger { color:var(--danger); border-color:color-mix(in srgb, var(--danger) 35%, var(--line)); background:transparent; }
+.button.ghost { background: transparent; }
+.icon-button { width: 42px; padding: 9px; font-size: 19px; }
+.page-shell { max-width: 1160px; margin: 0 auto; padding: 58px 24px 80px; }
+.hero { display: grid; grid-template-columns: 1fr 270px; gap: 36px; align-items: end; margin-bottom: 34px; }
+.eyebrow { color: var(--accent); letter-spacing: .16em; font-size: 11px; font-weight: 800; margin: 0 0 12px; }
+h1 { margin: 0; font-family: Georgia, "Songti SC", serif; font-size: clamp(42px, 7vw, 72px); font-weight: 500; line-height: 1; letter-spacing: -.05em; }
+.hero-copy { max-width: 610px; color: var(--muted); line-height: 1.75; margin: 20px 0 0; }
+.overall-card { min-height: 165px; padding: 25px 28px; border-radius: 20px; color: white; background: linear-gradient(140deg, #680000, #a4161a); box-shadow: var(--shadow); display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden; }
+.overall-card::after { content:""; position:absolute; width:150px; height:150px; border:1px solid rgba(255,255,255,.16); border-radius:50%; right:-55px; top:-52px; }
+.metric-label { opacity: .72; font-size: 12px; letter-spacing: .12em; }
+.overall-card strong { font-family: Georgia, serif; font-size: 57px; font-weight: 500; line-height: 1.05; }
+.overall-card > span:last-child { opacity: .7; font-size: 12px; }
+.formula-strip { padding: 17px 20px; border: 1px solid var(--line); border-radius: 14px; display: flex; align-items: center; gap: 14px; background: var(--surface); margin-bottom: 38px; }
+.formula-icon { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 9px; background: var(--accent-soft); color: var(--accent); font-family: Georgia, serif; font-size: 21px; }
+.formula-strip div { display: flex; flex-direction: column; min-width: 270px; gap: 2px; }
+.formula-strip strong { font-size: 12px; }.formula-strip span, .formula-strip p { font-size: 12px; color: var(--muted); }
+.formula-strip p { margin: 0 0 0 auto; }
+.semester-list { display: grid; gap: 32px; }
+.semester { background: var(--surface); border: 1px solid var(--line); border-radius: 20px; padding: 25px; box-shadow: 0 4px 16px rgba(25,40,35,.025); }
+.semester-head { display: flex; align-items: center; gap: 16px; margin-bottom: 20px; }
+.semester-title { flex: 1; min-width: 0; }.semester-title input { border: 0; background: transparent; color: var(--text); font-size: 22px; font-family: Georgia, "Songti SC", serif; width: 100%; padding: 3px 0; font-weight: 600; }
+.semester-title input:focus { outline: 0; box-shadow: inset 0 -2px var(--accent); }
+.semester-meta { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.semester-gpa { text-align: right; padding-right: 18px; border-right: 1px solid var(--line); }.semester-gpa span { display:block; font-size:11px; color:var(--muted); letter-spacing:.08em; }.semester-gpa strong { font-family:Georgia,serif; font-size:28px; font-weight:500; }
+.more-button { border:0; background:transparent; color:var(--muted); cursor:pointer; font-size:20px; padding:8px; }
+.course-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.course-card { --course-color: #8c9995; border-radius: 14px; background: color-mix(in srgb, var(--course-color) 9%, var(--surface)); border: 1px solid color-mix(in srgb, var(--course-color) 33%, var(--line)); padding: 17px 18px; position: relative; overflow: hidden; cursor: pointer; transition: .18s ease; }
+.course-card::before { content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--course-color); }.course-card:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+.course-top { display:flex; justify-content:space-between; gap:12px; align-items:flex-start; }.course-top h3 { margin:0; font-size:15px; line-height:1.45; }.score { font-size:20px; font-weight:780; white-space:nowrap; color:var(--course-color); }
+.course-sub { color:var(--muted); font-size:12px; margin:5px 0 18px; min-height:18px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.course-bottom { display:flex; align-items:end; justify-content:space-between; font-size:12px; color:var(--muted); }.gpa-value { text-align:right; }.gpa-value strong { display:block; color:var(--text); font-family:Georgia,serif; font-size:22px; font-weight:500; }.gpa-value span { font-size:10px; letter-spacing:.08em; }
+.add-course { min-height: 124px; border: 1px dashed var(--line); border-radius: 14px; background: transparent; color: var(--muted); cursor: pointer; display:grid; place-items:center; align-content:center; gap:5px; }.add-course span { font-size:26px; color:var(--accent); }.add-course:hover { border-color:var(--accent); color:var(--accent); }
+.add-semester-button { width: 100%; margin-top: 20px; min-height: 66px; border: 1px dashed var(--line); color: var(--muted); background: transparent; border-radius: 16px; cursor: pointer; font-weight: 650; }.add-semester-button span { font-size:21px; color:var(--accent); vertical-align:-1px; }.add-semester-button:hover { border-color:var(--accent); color:var(--accent); }
+.empty-state { text-align:center; padding:70px 20px; border:1px dashed var(--line); border-radius:20px; background:var(--surface); }.empty-illustration { margin:auto; width:110px; height:110px; display:grid; place-items:center; border-radius:50%; background:var(--accent-soft); color:var(--accent); font:38px Georgia,serif; }.empty-state h2 { margin:24px 0 8px; }.empty-state p { color:var(--muted); }.empty-actions { justify-content:center; margin-top:22px; }
+.dialog { width:min(650px, calc(100% - 32px)); max-height:90vh; padding:0; border:1px solid var(--line); border-radius:20px; background:var(--surface); color:var(--text); box-shadow:0 30px 80px rgba(0,0,0,.25); }.dialog::backdrop { background:rgba(8,16,13,.55); backdrop-filter:blur(3px); }.dialog form { padding:26px; overflow:auto; max-height:90vh; }.dialog-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:24px; }.dialog-head h2 { margin:0; font-family:Georgia,"Songti SC",serif; font-size:28px; }.close-button { border:0; background:var(--surface-soft); border-radius:50%; width:36px; height:36px; cursor:pointer; font-size:22px; color:var(--muted); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:17px 14px; }.form-grid label, .source-label { font-size:12px; font-weight:700; color:var(--muted); }.form-grid .wide { grid-column:1 / -1; }.form-grid input, .form-grid select, textarea { display:block; width:100%; margin-top:7px; border:1px solid var(--line); border-radius:10px; padding:11px 12px; background:var(--bg); color:var(--text); outline:none; }.form-grid input:focus, .form-grid select:focus, textarea:focus { border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }.form-help { color:var(--muted); font-size:12px; line-height:1.5; }.dialog-actions { justify-content:flex-end; margin-top:24px; }.action-spacer { flex:1; }
+.privacy-note { display:flex; gap:14px; padding:14px; border-radius:12px; background:var(--accent-soft); color:var(--accent); font-size:12px; line-height:1.5; }.privacy-note span { color:var(--text); }.steps { list-style:none; padding:0; margin:22px 0; display:grid; gap:15px; }.steps li { display:flex; gap:13px; }.steps li > span { flex:0 0 27px; width:27px; height:27px; display:grid; place-items:center; border-radius:50%; background:var(--surface-soft); color:var(--accent); font-weight:800; font-size:12px; }.steps strong { font-size:13px; }.steps p { margin:3px 0 0; color:var(--muted); font-size:12px; line-height:1.55; }.steps kbd, .steps code { background:var(--surface-soft); border:1px solid var(--line); border-radius:4px; padding:1px 4px; }.source-label textarea { resize:vertical; min-height:150px; font-family:ui-monospace,monospace; font-size:11px; line-height:1.5; }.error-message { color:var(--danger); min-height:18px; margin:9px 0 0; font-size:12px; }
+.toast { position:fixed; left:50%; bottom:28px; transform:translate(-50%, 20px); background:var(--text); color:var(--surface); padding:11px 18px; border-radius:10px; opacity:0; pointer-events:none; transition:.25s; z-index:30; box-shadow:var(--shadow); font-size:13px; }.toast.show { opacity:1; transform:translate(-50%,0); }
+.hidden { display:none !important; }
+@media (max-width: 740px) { .topbar { padding:0 16px; }.top-actions .button { font-size:0; }.top-actions .button::after { content:"导入"; font-size:13px; }.page-shell { padding:36px 16px 60px; }.hero { grid-template-columns:1fr; }.overall-card { min-height:130px; }.formula-strip { align-items:flex-start; flex-wrap:wrap; }.formula-strip p { margin:0 0 0 50px; }.course-grid { grid-template-columns:1fr; }.semester { padding:18px 14px; }.semester-head { flex-wrap:wrap; }.semester-title { min-width:60%; }.semester-gpa { border:0; padding:0; }.form-grid { grid-template-columns:1fr; }.form-grid .wide { grid-column:auto; } }

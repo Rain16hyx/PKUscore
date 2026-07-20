@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="北京大学百分制成绩与 GPA 换算工具">
+  <title>PKUscore · 绩点换算</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="PKUscore 首页"><span class="brand-mark">P</span><span>PKUscore</span></a>
+    <nav class="top-actions" aria-label="页面操作">
+      <button class="button ghost" id="importButton">导入树洞源码</button>
+      <button class="icon-button" id="themeButton" aria-label="切换明暗主题" title="切换明暗主题">◐</button>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">PEKING UNIVERSITY · GPA TOOL</p>
+        <h1>成绩，一目了然。</h1>
+        <p class="hero-copy">按北大官方公式换算绩点。数据只保存在你的浏览器与本机，不会上传到互联网。</p>
+      </div>
+      <aside class="overall-card" aria-label="总绩点">
+        <span class="metric-label">总 GPA</span>
+        <strong id="overallGpa">—</strong>
+        <span id="overallMeta">暂无计入课程</span>
+      </aside>
+    </section>
+
+    <section class="formula-strip">
+      <span class="formula-icon">ƒ</span>
+      <div><strong>北大绩点公式</strong><span>G = 4 − 3 × (100 − S)² / 1600</span></div>
+      <p>60 分以下绩点为 0；P/F 课程不计入 GPA</p>
+    </section>
+
+    <section id="emptyState" class="empty-state hidden">
+      <div class="empty-illustration">4.0</div>
+      <h2>开始整理你的成绩</h2>
+      <p>手动添加一门课程，或从北大树洞成绩页一次导入全部记录。</p>
+      <div class="empty-actions"><button class="button primary" data-action="add-semester">添加学期</button><button class="button secondary" id="emptyImport">从树洞导入</button></div>
+    </section>
+
+    <div id="semesterList" class="semester-list"></div>
+
+    <button class="add-semester-button" data-action="add-semester"><span>＋</span> 添加学期</button>
+  </main>
+
+  <dialog id="courseDialog" class="dialog">
+    <form id="courseForm" method="dialog">
+      <div class="dialog-head"><div><p class="eyebrow">COURSE DETAILS</p><h2 id="courseDialogTitle">添加课程</h2></div><button type="button" class="close-button" data-close="courseDialog" aria-label="关闭">×</button></div>
+      <input type="hidden" name="semesterId"><input type="hidden" name="courseId">
+      <div class="form-grid">
+        <label class="wide">课程名称<input required maxlength="80" name="name" placeholder="例如：高等数学 A"></label>
+        <label>课程类别<input maxlength="40" name="category" placeholder="例如：专业必修"></label>
+        <label>授课教师<input maxlength="80" name="teacher" placeholder="例如：张老师"></label>
+        <label>学分<input required name="credits" type="number" min="0" max="30" step="0.1" value="3"></label>
+        <label>计分制<select name="scheme"><option value="percentage">百分制</option><option value="pass_fail">合格制（P/F）</option></select></label>
+        <label id="scoreField">原始成绩<input required name="score" type="number" min="0" max="100" step="0.1" placeholder="0–100"></label>
+        <label id="pfField" class="hidden">课程结果<select name="pfScore"><option value="P">P · 合格</option><option value="F">F · 不合格</option></select></label>
+      </div>
+      <p class="form-help">百分制支持一位或多位小数；合格制课程不会计入 GPA。</p>
+      <div class="dialog-actions"><button type="button" class="button danger hidden" id="deleteCourse">删除课程</button><span class="action-spacer"></span><button type="button" class="button ghost" data-close="courseDialog">取消</button><button type="submit" class="button primary" id="saveCourse">保存课程</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="importDialog" class="dialog import-dialog">
+    <form id="importForm" method="dialog">
+      <div class="dialog-head"><div><p class="eyebrow">IMPORT GUIDE</p><h2>从北大树洞导入</h2></div><button type="button" class="close-button" data-close="importDialog" aria-label="关闭">×</button></div>
+      <div class="privacy-note"><strong>隐私说明</strong><span>源码只发送到你电脑上运行的 Python 程序，不会离开本机。导入前仍建议检查并删除不希望保留的信息。</span></div>
+      <ol class="steps">
+        <li><span>1</span><div><strong>打开成绩页面</strong><p>登录北大树洞，进入「成绩」，等待所有学期和课程完全加载。</p></div></li>
+        <li><span>2</span><div><strong>打开开发者工具</strong><p>Chrome / Edge 按 <kbd>F12</kbd>（Mac 可按 <kbd>⌥⌘I</kbd>），选择顶部的「Elements / 元素」。Safari 需先在设置中开启“显示网页开发者功能”。</p></div></li>
+        <li><span>3</span><div><strong>复制完整 body</strong><p>在元素树找到 <code>&lt;body&gt;</code>，右键选择「Copy → Copy outerHTML / 复制外部 HTML」。请勿使用“查看网页源代码”，其中通常没有已加载的成绩。</p></div></li>
+        <li><span>4</span><div><strong>粘贴并导入</strong><p>把复制的内容粘贴到下方。导入会追加到现有记录，同名学期会合并。</p></div></li>
+      </ol>
+      <label class="source-label">HTML 源码<textarea required id="htmlSource" rows="8" placeholder="在这里粘贴以 <body ...> 开头的源码"></textarea></label>
+      <p id="importError" class="error-message" role="alert"></p>
+      <div class="dialog-actions"><button type="button" class="button ghost" data-close="importDialog">取消</button><button type="submit" class="button primary" id="runImport">识别并导入</button></div>
+    </form>
+  </dialog>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="app.js" defer></script>
+</body>
+</html>
