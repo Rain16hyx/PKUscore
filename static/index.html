@@ -9,9 +9,9 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="#" aria-label="PKUscore 首页"><span class="brand-mark">北</span><span>PKUscore <i>绩点换算</i></span></a>
+    <a class="brand" href="#" aria-label="PKUscore 首页"><img class="brand-emblem" src="assets/pku-emblem.png" alt=""><span>PKUscore <i>绩点换算</i></span></a>
     <nav class="top-actions" aria-label="页面操作">
-      <button class="button ghost" id="importButton">导入树洞源码</button>
+      <button class="button ghost" id="importButton">从树洞导入</button>
       <button class="icon-button" id="themeButton" aria-label="切换明暗主题" title="切换明暗主题">◐</button>
     </nav>
   </header>
@@ -20,8 +20,8 @@
     <section class="hero">
       <div class="hero-title">
         <p class="eyebrow">PKU SCORE</p>
-        <h1>绩点换算</h1>
-        <p class="hero-copy">一份简单、清楚的本地成绩单。</p>
+        <h1>PKUscore 绩点换算系统</h1>
+        <p class="hero-copy">非官方个人开发，仅限北大学生本地使用</p>
       </div>
       <aside class="overall-card" aria-label="总绩点">
         <div><span class="metric-label">总 GPA</span><span id="overallMeta">暂无计入课程</span></div>
@@ -73,7 +73,7 @@
         <li><span>1</span><div><strong>打开成绩页面</strong><p>登录北大树洞，进入「成绩」，等待所有学期和课程完全加载。</p></div></li>
         <li><span>2</span><div><strong>打开开发者工具</strong><p>Chrome / Edge 按 <kbd>F12</kbd>（Mac 可按 <kbd>⌥⌘I</kbd>），选择顶部的「Elements / 元素」。Safari 需先在设置中开启“显示网页开发者功能”。</p></div></li>
         <li><span>3</span><div><strong>复制完整 body</strong><p>在元素树找到 <code>&lt;body&gt;</code>，右键选择「Copy → Copy outerHTML / 复制外部 HTML」。请勿使用“查看网页源代码”，其中通常没有已加载的成绩。</p></div></li>
-        <li><span>4</span><div><strong>粘贴并导入</strong><p>把复制的内容粘贴到下方。导入会追加到现有记录，同名学期会合并。</p></div></li>
+        <li><span>4</span><div><strong>粘贴并导入</strong><p>把复制的内容粘贴到下方。重新导入会覆盖上一次的树洞数据，手工添加的课程不受影响。</p></div></li>
       </ol>
       <label class="source-label">HTML 源码<textarea required id="htmlSource" rows="8" placeholder="在这里粘贴以 <body ...> 开头的源码"></textarea></label>
       <p id="importError" class="error-message" role="alert"></p>

@@ -119,6 +119,7 @@ def parse_portal_html(source: str) -> list[dict]:
                 raise ValueError(f"无法识别《{title_node.text()}》的学分或成绩") from exc
             courses.append({
                 "id": uuid4().hex,
+                "source": "portal",
                 "name": title_node.text(),
                 "category": category_node.text() if category_node else details.get("课程体系", ""),
                 "teacher": _teacher(details.get("教师信息", "")),
@@ -126,7 +127,7 @@ def parse_portal_html(source: str) -> list[dict]:
                 "scheme": "in_progress" if is_in_progress else ("pass_fail" if is_pf else "percentage"),
                 "score": score,
             })
-        semesters.append({"id": uuid4().hex, "name": name, "courses": courses})
+        semesters.append({"id": uuid4().hex, "source": "portal", "name": name, "courses": courses})
     if not semesters:
         raise ValueError("识别到了页面结构，但没有找到课程；请复制完整的成绩查询页 HTML")
     return semesters

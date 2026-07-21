@@ -2,6 +2,7 @@
 
 const STORAGE_KEY = "pkscore-record-v1";
 const THEME_KEY = "pkscore-theme";
+const IMPORT_KEY = "pkscore-portal-import-v1";
 const state = { semesters: loadRecord(), calculation: null };
 const $ = (selector, root = document) => root.querySelector(selector);
 const uid = () => globalThis.crypto?.randomUUID?.() || `${Date.now()}-${Math.random()}`;
@@ -15,6 +16,38 @@ function loadRecord() {
 
 function saveRecord() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state.semesters));
+}
+
+function loadImportRecord() {
+  try {
+    const value = JSON.parse(localStorage.getItem(IMPORT_KEY));
+    return {
+      courseIds: Array.isArray(value?.courseIds) ? value.courseIds : [],
+      semesterIds: Array.isArray(value?.semesterIds) ? value.semesterIds : [],
+    };
+  } catch { return {courseIds: [], semesterIds: []}; }
+}
+
+function removePreviousImport() {
+  const record = loadImportRecord();
+  const trackedCourses = new Set(record.courseIds);
+  const trackedSemesters = new Set(record.semesterIds);
+  const hasTracking = trackedCourses.size > 0 || trackedSemesters.size > 0;
+  const legacyPortalId = id => /^[0-9a-f]{32}$/i.test(String(id || ""));
+
+  state.semesters = state.semesters
+    .map(semester => ({
+      ...semester,
+      courses: semester.courses.filter(course => {
+        if (trackedCourses.has(course.id) || course.source === "portal") return false;
+        return hasTracking || !legacyPortalId(course.id);
+      }),
+    }))
+    .filter(semester => {
+      if (semester.courses.length > 0) return true;
+      if (trackedSemesters.has(semester.id) || semester.source === "portal") return false;
+      return hasTracking || !legacyPortalId(semester.id);
+    });
 }
 
 function esc(value) {
@@ -189,10 +222,20 @@ async function runImport(event) {
   button.disabled = true; button.textContent = "正在识别…"; $("#importError").textContent = "";
   try {
     const result = await api("/api/import", {html:source});
+    removePreviousImport();
+    const importedCourseIds = [];
+    const createdSemesterIds = [];
     for (const incoming of result.semesters) {
       const existing = state.semesters.find(item => item.name === incoming.name);
-      if (existing) existing.courses.push(...incoming.courses); else state.semesters.push(incoming);
+      importedCourseIds.push(...incoming.courses.map(course => course.id));
+      if (existing) {
+        existing.courses.push(...incoming.courses);
+      } else {
+        state.semesters.push(incoming);
+        createdSemesterIds.push(incoming.id);
+      }
     }
+    localStorage.setItem(IMPORT_KEY, JSON.stringify({courseIds: importedCourseIds, semesterIds: createdSemesterIds}));
     saveRecord(); $("#importDialog").close(); $("#htmlSource").value = ""; render();
     toast(`成功导入 ${result.semesters.length} 个学期、${result.count} 门课程`);
   } catch (error) { $("#importError").textContent = error.message; }

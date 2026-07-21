@@ -60,6 +60,8 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(course["name"], "测试课程")
         self.assertEqual(course["teacher"], "张老师")
         self.assertEqual(course["score"], 88.5)
+        self.assertEqual(course["source"], "portal")
+        self.assertEqual(semesters[0]["source"], "portal")
 
     def test_portal_html_import_accepts_ip(self):
         source = self.SAMPLE.replace("88.5", "IP")
