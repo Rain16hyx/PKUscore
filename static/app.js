@@ -33,18 +33,19 @@ function displayNumber(value) {
 }
 
 function courseColor(course) {
-  if (course.scheme === "pass_fail") return course.score === "P" ? "#3f8c70" : "#bb5656";
+  if (course.scheme === "in_progress") return "#d7e3e7";
+  if (course.scheme === "pass_fail") return course.score === "P" ? "#addbc2" : "#e4a3a0";
   // 常见成绩集中在 70–100 分，因此在这一区间设置更密集的色阶。
   const stops = [
-    [0,   [164, 36, 38]],
-    [60,  [190, 51, 43]],
-    [70,  [218, 86, 48]],
-    [75,  [224, 154, 47]],
-    [80,  [192, 166, 48]],
-    [85,  [126, 158, 55]],
-    [90,  [64, 139, 79]],
-    [95,  [35, 120, 72]],
-    [100, [20, 101, 61]],
+    [0,   [204, 91, 88]],
+    [60,  [232, 116, 91]],
+    [70,  [244, 148, 98]],
+    [75,  [247, 199, 104]],
+    [80,  [242, 229, 111]],
+    [85,  [216, 239, 113]],
+    [90,  [181, 232, 108]],
+    [95,  [143, 218, 104]],
+    [100, [105, 198, 96]],
   ];
   const score = Math.max(0, Math.min(100, Number(course.score)));
   const upperIndex = stops.findIndex(([boundary]) => score <= boundary);
@@ -79,11 +80,12 @@ function render() {
 }
 
 function courseTemplate(semesterId, course) {
-  const rawScore = course.scheme === "pass_fail" ? course.score : `${course.score} 分`;
+  const schemeLabel = {percentage: "百分制", pass_fail: "合格制", in_progress: "进行中"}[course.scheme] || "百分制";
+  const rawScore = course.scheme === "in_progress" ? "IP" : course.score;
   return `<article class="course-card" tabindex="0" role="button" aria-label="编辑 ${esc(course.name)}" data-action="edit-course" data-course-id="${esc(course.id)}" data-semester-id="${esc(semesterId)}">
-    <div class="course-top"><h3>${esc(course.name)}</h3><span class="score">${esc(rawScore)}</span></div>
-    <p class="course-sub">${esc([course.category, course.teacher].filter(Boolean).join(" · ") || "未填写类别与教师")}</p>
-    <div class="course-bottom"><span>${Number(course.credits).toLocaleString("zh-CN")} 学分 · ${course.scheme === "pass_fail" ? "合格制" : "百分制"}</span><span class="gpa-value"><strong data-role="course-gpa">—</strong><span>课程绩点</span></span></div>
+    <div class="credit-block"><strong>${Number(course.credits).toLocaleString("zh-CN")}</strong><span>学分</span></div>
+    <div class="course-info"><h3>${esc(course.name)}</h3><p>${esc([course.category, course.teacher, schemeLabel].filter(Boolean).join(" · "))}</p></div>
+    <div class="score-block"><strong class="score">${esc(rawScore)}</strong><span>绩点 <b data-role="course-gpa">—</b></span></div>
   </article>`;
 }
 
@@ -131,7 +133,7 @@ function openCourseDialog(semesterId, courseId = "") {
   if (course) {
     for (const field of ["name", "category", "teacher", "credits", "scheme"]) form.elements[field].value = course[field];
     if (course.scheme === "pass_fail") form.elements.pfScore.value = course.score;
-    else form.elements.score.value = course.score;
+    else if (course.scheme === "percentage") form.elements.score.value = course.score;
   }
   toggleScoreField();
   $("#courseDialog").showModal();
@@ -139,10 +141,10 @@ function openCourseDialog(semesterId, courseId = "") {
 }
 
 function toggleScoreField() {
-  const pf = $("#courseForm").elements.scheme.value === "pass_fail";
-  $("#scoreField").classList.toggle("hidden", pf);
-  $("#pfField").classList.toggle("hidden", !pf);
-  $("#courseForm").elements.score.required = !pf;
+  const scheme = $("#courseForm").elements.scheme.value;
+  $("#scoreField").classList.toggle("hidden", scheme !== "percentage");
+  $("#pfField").classList.toggle("hidden", scheme !== "pass_fail");
+  $("#courseForm").elements.score.required = scheme === "percentage";
 }
 
 function saveCourse(event) {
@@ -156,7 +158,7 @@ function saveCourse(event) {
     id: form.elements.courseId.value || uid(), name:form.elements.name.value.trim(),
     category:form.elements.category.value.trim(), teacher:form.elements.teacher.value.trim(),
     credits:Number(form.elements.credits.value), scheme,
-    score: scheme === "pass_fail" ? form.elements.pfScore.value : Number(form.elements.score.value)
+    score: scheme === "pass_fail" ? form.elements.pfScore.value : (scheme === "in_progress" ? "IP" : Number(form.elements.score.value))
   };
   const index = semester.courses.findIndex(item => item.id === data.id);
   if (index >= 0) semester.courses[index] = data; else semester.courses.push(data);

@@ -23,6 +23,18 @@ class CalculationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "0 到 100"):
             calculate_record([{"courses": [{"name": "甲", "credits": 2, "score": 101}]}])
 
+    def test_in_progress_course_is_excluded_from_gpa(self):
+        result = calculate_record([{"name": "测试学期", "courses": [
+            {"name": "已结课", "credits": 2, "scheme": "percentage", "score": 100},
+            {"name": "未结课", "credits": 4, "scheme": "percentage", "score": "IP"},
+        ]}])
+        semester = result["semesters"][0]
+        self.assertEqual(result["overall_gpa"], 4)
+        self.assertEqual(result["gpa_credits"], 2)
+        self.assertEqual(result["total_credits"], 6)
+        self.assertEqual(semester["courses"][1]["display"], "IP")
+        self.assertFalse(semester["courses"][1]["included"])
+
 
 class ImportTests(unittest.TestCase):
     SAMPLE = """
@@ -48,6 +60,12 @@ class ImportTests(unittest.TestCase):
         self.assertEqual(course["name"], "测试课程")
         self.assertEqual(course["teacher"], "张老师")
         self.assertEqual(course["score"], 88.5)
+
+    def test_portal_html_import_accepts_ip(self):
+        source = self.SAMPLE.replace("88.5", "IP")
+        course = parse_portal_html(source)[0]["courses"][0]
+        self.assertEqual(course["scheme"], "in_progress")
+        self.assertEqual(course["score"], "IP")
 
 
 if __name__ == "__main__":

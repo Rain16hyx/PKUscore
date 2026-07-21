@@ -104,11 +104,17 @@ def parse_portal_html(source: str) -> list[dict]:
                 if label:
                     details[label] = value
             record_method = details.get("成绩记录方式", "")
-            grade = grade_node.text()
+            grade = grade_node.text().strip()
+            is_in_progress = grade.upper() == "IP"
             is_pf = record_method == "合格制" or grade in {"合格", "不合格", "P", "F"}
             try:
                 credits = float(credit_node.text())
-                score = ({"合格": "P", "不合格": "F"}.get(grade, grade) if is_pf else float(grade))
+                if is_in_progress:
+                    score = "IP"
+                elif is_pf:
+                    score = {"合格": "P", "不合格": "F"}.get(grade, grade)
+                else:
+                    score = float(grade)
             except ValueError as exc:
                 raise ValueError(f"无法识别《{title_node.text()}》的学分或成绩") from exc
             courses.append({
@@ -117,7 +123,7 @@ def parse_portal_html(source: str) -> list[dict]:
                 "category": category_node.text() if category_node else details.get("课程体系", ""),
                 "teacher": _teacher(details.get("教师信息", "")),
                 "credits": credits,
-                "scheme": "pass_fail" if is_pf else "percentage",
+                "scheme": "in_progress" if is_in_progress else ("pass_fail" if is_pf else "percentage"),
                 "score": score,
             })
         semesters.append({"id": uuid4().hex, "name": name, "courses": courses})

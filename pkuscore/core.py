@@ -26,8 +26,10 @@ def _number(value: Any, field: str, *, minimum: float, maximum: float) -> float:
 
 def _course(raw: dict[str, Any]) -> dict[str, Any]:
     scheme = raw.get("scheme", "percentage")
-    if scheme not in {"percentage", "pass_fail"}:
-        raise ValueError("计分制只能是百分制或合格制")
+    if str(raw.get("score", "")).strip().upper() == "IP":
+        scheme = "in_progress"
+    if scheme not in {"percentage", "pass_fail", "in_progress"}:
+        raise ValueError("计分制只能是百分制、合格制或进行中")
     credits = _number(raw.get("credits", 0), "学分", minimum=0, maximum=30)
     result = {
         "id": str(raw.get("id", "")),
@@ -38,7 +40,9 @@ def _course(raw: dict[str, Any]) -> dict[str, Any]:
         "scheme": scheme,
         "score": raw.get("score", ""),
     }
-    if scheme == "pass_fail":
+    if scheme == "in_progress":
+        result.update(score="IP", gpa=None, display="IP", included=False)
+    elif scheme == "pass_fail":
         score = str(raw.get("score", "P")).strip().upper()
         score = {"合格": "P", "通过": "P", "不合格": "F", "未通过": "F"}.get(score, score)
         if score not in {"P", "F"}:
